@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="../css/reset.css">
+	<script src="../js/jquery-1.12.3.js"></script>
+	<style>
+		.wrap {
+			width: 600px;
+			height: 300px;
+			margin: 0 auto;
+			border: 1px solid red;
+		}
+		.canvasbox {
+			float: left;
+		}
+		a {
+			float: right;
+			width: 100px;
+			height: 35px;
+			border: 1px solid #ccc;
+			text-align: center;
+			line-height: 35px;
+			cursor: pointer;
+		}
+	</style>
+	<script>
+		window.onload = function() {
+			function SectorDraw(option) {
+				this.option = option;
+				this.canvas = option["canvas"];
+				this.data = option["series"]["data"];
+				this.ctx = this.canvas.getContext('2d');
+				this.ctxWidth = this.canvas.width;
+				this.ctxHeight = this.canvas.height;
+				this.sectorPosX = option["series"]["center"][0];
+				this.sectorPosY = option["series"]["center"][1];
+				this.x = this.ctxWidth * this.sectorPosX; // 扇形在画布中的水平位置
+				this.y = this.ctxHeight * this.sectorPosY; // 扇形在画布中的垂直位置
+				this.radius = option["series"]["radius"] * this.ctxWidth;
+				this.sectorData = []; // 用来存取分析后的数据
+				this.color = ["red", "green", "blue", "#58f", "#85f", "#c9c9c9", "#521", "#432", "#58f", "#789", "#f13"];
+				this.sum = 0;
+				this.timer = null;
+				this.ctx.font = "16px SimSun";
+				this.lastScale = 0;
+				this.i = 0;
+				this.showText();
+				this.getSum();
+				this.Drawing();
+			}
+			SectorDraw.prototype.drawSector = function() {
+				this.currentScale = parseFloat(this.sectorData[this.i]["scale"]);
+				// 开始一条新路径
+				this.ctx.beginPath();
+				// 位移到圆心，方便绘制
+				if (this.i == 0) {
+					this.ctx.translate(this.x, this.y);
+				}
+				// 移动到圆心
+				this.ctx.moveTo(0, 0);
+				// 绘制圆弧
+				if (this.i == 0) {
+					this.ctx.arc(0, 0, this.radius, (Math.PI * 2 ) * 0, (Math.PI *2 ) * this.currentScale);
+					this.lastScale = this.currentScale;
+				} else {
+					this.ctx.arc(0, 0, this.radius, (Math.PI * 2 ) * this.lastScale, (Math.PI * 2) * (this.currentScale + this.lastScale));
+					this.lastScale = parseFloat(this.currentScale + this.lastScale);
+				}
+				// 闭合路径
+				this.ctx.closePath();
+				this.ctx.fillStyle = this.color[this.i];
+				this.ctx.fill();
+			}
+			SectorDraw.prototype.Drawing = function() {
+				var _this = this;
+				function moveDraw() {
+					_this.drawSector();
+					_this.timer = setTimeout(function() {
+						moveDraw(_this.i);
+					}, 100);
+					if (_this.i == _this.data.length - 1) {
+						clearTimeout(_this.timer);
+						_this.timer = null;
+					}
+					_this.i++;
+				}moveDraw(_this.i);
+			}
+			SectorDraw.prototype.getSum = function() {
+				// 计算数值总和
+				for (var i = 0; i < this.data.length; i++) {
+					this.sum += parseInt(this.data[i]["value"]);
+				}
+				this.packJson();
+			}
+			SectorDraw.prototype.packJson = function() {
+				// 将所需数据封装成json
+				for (var i = 0; i < this.data.length; i++) {
+					this.sectorData[i] = {};
+					this.sectorData[i].value = this.data[i]["value"];
+					this.sectorData[i].name = this.data[i]["name"];
+					this.sectorData[i].scale = (this.data[i]["value"] / this.sum).toFixed(3);
+				};
+			}
+			SectorDraw.prototype.showText = function() {
+				this.ctx.translate(0,10);	
+				for (var i = 0; i < this.data.length; i++) {
+					this.ctx.fillText(this.data[i]["name"], 20, 20 + (20 * i));
+				}
+				for (var i = 0; i < this.data.length; i++) {
+					this.ctx.fillStyle = this.color[i];
+					this.ctx.fillRect(70,  7 + (20 * i), 20, 16);
+				}
+				this.ctx.fillStyle = "red";
+				this.ctx.fillText(this.option["title"], 120, 20);
+				this.ctx.fillText(this.option["legend"], 150, 40);
+			}
+			/*
+			 *  json格式：
+			 *	var option = {
+			 *  	"canvas" : canvasSecond,
+			 *  	"title" : "标题",
+			 *		"legend" : "副标题",
+			 *  	"series" : {
+			 *		"radius" : 0.3,
+			 * 		"center" : [0.6, 0.6],
+			 *		"data": [
+			 *				{"value": 335, "name" : "哈哈"},
+			 *				{"value": 125, "name" : "呵呵"}
+			 *			]
+			 *		}
+			 *   }
+			 * 
+			 * 调用demo：var sectorDraw = new SectorDraw(option);
+			 * 
+			*/
+
+			$(function() {
+				$.ajax({ 
+					url: "data.json", 
+					type: "get",
+					dataType: "json",
+				}).done(function(data) {
+					var dataTit = data["title"]["text"];
+					var dataLe = data["legend"]["data"];
+					var dataYa = data["yAxis"]["data"];
+					var dataNum = [data["series"][0]["data"], data["series"][1]["data"]];
+					var canvasFirst = document.getElementById("canvasFirst");
+					var canvasSecond = document.getElementById("canvasSecond");
+					var dataFirst = [];
+					var dataSecond = [];
+
+					for (var i = 0; i < dataYa.length; i++) {
+						dataFirst[i] = {};
+						dataFirst[i].name = dataYa[i];
+						dataFirst[i].value = dataNum[0][i];
+					}
+
+					for (var i = 0; i < dataYa.length; i++) {
+						dataSecond[i] = {};
+						dataSecond[i].name = dataYa[i];
+						dataSecond[i].value = dataNum[1][i];
+
+					}
+
+					var optionFirst = {
+						"canvas" : canvasFirst,
+						"title" : dataTit,
+						"legend" : dataLe[0],
+						"series" : {
+							"radius" : 0.3,
+							"center" : [0.6, 0.6],
+							"data": dataFirst
+						}
+					}
+					var optionSecond = {
+						"canvas" : canvasSecond,
+						"title" : dataTit,
+						"legend" : dataLe[1],
+						"series" : {
+							"radius" : 0.3,
+							"center" : [0.6, 0.6],
+							"data": dataSecond
+						}
+					}
+					var sectorDrawFir = new SectorDraw(optionFirst);
+					var sectorDrawSed = new SectorDraw(optionSecond);
+					
+				}).fail(function() {
+					console.log("失败");
+				});
+			});
+		}
+	</script>
+</head>
+<body>
+	<div class="wrap">
+		<canvas id="canvasFirst" class="canvasbox" width="300" height="300"></canvas>
+		<canvas id="canvasSecond" class="canvasbox" width="300" height="300"></canvas>
+	</div>
+	<a href="ring.html" alt="" title="">环状数据表</a>
+	<a href="Histogram.html" alt="" title="">柱状图数据表</a>
+	<a href="Line.html" alt="" title="">曲线数据表</a>
+</body>
+</html>

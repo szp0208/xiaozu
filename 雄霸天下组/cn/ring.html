@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>扇形</title>
+	<link rel="stylesheet" href="../css/reset.css">
+	<style>
+		div {
+			overflow: hidden;
+			width: 620px;
+			height: 620px;
+			margin: 0 auto;
+		}
+		a {
+			float: right;
+			width: 100px;
+			height: 35px;
+			border: 1px solid #ccc;
+			text-align: center;
+			line-height: 35px;
+			cursor: pointer;
+		}
+	</style>
+</head>
+<body>
+	<div>
+		<canvas id="canvas1" width="620"; height="310"></canvas>
+		<canvas id="canvas2" width="620"; height="310"></canvas>
+	</div>
+	<a href="Histogram.html" alt="" title="">柱状图数据表</a>
+	<a href="sector_charts.html" alt="" title="">扇形数据表</a>
+	<a href="Line.html" alt="" title="">曲线数据表</a>
+</body>
+	<script>
+		var ctx = document.getElementById('canvas1').getContext('2d');
+		var ctx2 = document.getElementById('canvas2').getContext('2d');
+
+		function getData() {
+			var dataTit = [];
+			var dataLe = [];
+			var dataYa = [];
+			var dataNum = [];
+			var dataSe = [];
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				var result = JSON.parse(xhr.responseText);
+
+				for (var i in result) {
+					if (i == 'title') {
+						dataTit = result[i].text;
+					} else if (i == 'legend') {
+						dataLe = result[i].data;
+					} else if (i == 'yAxis') {
+						dataYa = result[i].data;
+					} else if (i == 'series') {
+						dataSe = result[i];
+					}
+
+				}
+				for (var i in dataSe) {
+					dataNum.push(dataSe[i].data)
+				}
+				drewSector(ctx,dataTit, dataLe[0], dataYa, dataNum[0]);
+				drewSector(ctx2,dataTit, dataLe[1], dataYa, dataNum[1]);
+			}
+			xhr.open('get', 'data.json', true);
+			xhr.send(null);
+		}
+		getData();
+		/*
+		 *	drewSector ctx 画板 dataTit数据标题
+		 *	dL数据年份 data:["2011年", "2012年"]	dataYa对比国家	
+		 *	dN 相应年对应数据
+		 */
+		function drewSector(ctx, dataTit, dL, dataYa, dN) {
+			var clo = ["red", "green", "blue", "#58f", "#85f", "#c9c9c9", "#521", "#432"]
+		    var num = [];
+		    // 获取标题
+			function getTit(titX, titY) {
+				ctx.font = '20px impact';
+				ctx.fillText(dL + dataTit,titX,titY);
+			}getTit(50,50);
+
+			// 总人口数
+			 function getTotal() {
+			 	var totalAll = 0;
+			 	for (var i = 0; i < dN.length; i++) {
+			 		totalAll += dN[i];
+			 	};
+			 	return totalAll;
+			 }
+			 // 获取人数占总数的百分比
+		    function getNum() {
+		    	for (var i = 0; i < dN.length; i++) {
+		    		step = (dN[i] / getTotal() * 360)
+		    		num.push(step);
+		    	};
+		    	return num;
+		    }getNum();
+			CanvasRenderingContext2D.prototype.sector = function (sDeg, eDeg) {
+				this.save();
+				this.translate(200, 200);
+				this.beginPath();
+				this.arc(0,0,100,sDeg, eDeg);
+				this.save();
+				// 旋转至起始角度
+				this.rotate(eDeg);
+				// 移动到终点，准备连接终点与圆心
+				this.moveTo(100,0);
+				// 连接到圆心
+				this.lineTo(0,0);
+				this.restore();
+				this.rotate(sDeg);
+				this.lineTo(100,0);
+				this.closePath();
+				this.restore();
+				return this;
+			}
+			// 生成扇形圆
+			// leng 数据长度
+			function secNum(Leng) {
+				var deg = Math.PI / 180;
+				var step = 0;
+				var stept = 0;
+				for (var i = 0; i < Leng; i++) {
+					ctx.fillStyle = clo[i];
+					stept += num[i];
+					ctx.sector(step * deg,stept * deg).fill(); // 调用画出扇形图	
+					step += num[i];
+				}	
+			}
+			secNum(dN.length);
+			// 扇形中心圆样式
+			/*
+			 *ciclePos 圆心点坐标[200,200],radius: 半径
+			 *
+			 */
+			function smallCirc(ciclePos,radius) {
+				ctx.beginPath();
+				ctx.arc(ciclePos[0],ciclePos[1], radius, 0, Math.PI * 2);	
+				ctx.closePath();	
+				ctx.fillStyle = '#fff';	
+				ctx.fill()
+			}
+			smallCirc([200,200], 50);
+			/*
+			 * clickY 小块Y轴位置，textY/textY2 文字Y轴位置，font字体
+			 * blockPosition，小块X轴位置，blockSize[15,15]小块尺寸
+			 */
+			function getSmallBlock(cicleY,textY,textY2,font,blockPosition,txtPosition,txt2Position,blockSize) {
+				var cicleY;
+				var textY;
+				var textY2;
+				ctx.font = font;
+				for (var i = 0; i < dataYa.length; i++) {
+					ctx.fillStyle = clo[i];
+					ctx.fillRect(blockPosition, cicleY, blockSize[0], blockSize[1]);
+					cicleY += 40;
+					ctx.fillText(dataYa[i] + (num[i] / 3.6).toFixed(2) + "%" ,txtPosition,textY);
+					textY += 40;
+					ctx.fillText(dN[i],txt2Position,textY2);
+					textY2 += 40;
+				};
+			}getSmallBlock(50, 65, 65, '16px impact',350,380,550,[15,15]);
+		}
+	</script>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>陈雄</title>
+</head>
+<body>
+	<div class="wrap"></div>
+	<script src="../js/jquery-1.12.3.js"></script>
+	<script>
+		function getData() {
+			var dataTit = [];
+			var dataLe = [];
+			var dataYa = [];
+			var dataNum = [];
+			var dataSe = [];
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				var result = JSON.parse(xhr.responseText);
+
+				for (var i in result) {
+					if (i == 'title') {
+						dataTit = result[i].text;
+					} else if (i == 'legend') {
+						dataLe = result[i].data;
+					} else if (i == 'yAxis') {
+						dataYa = result[i].data;
+					} else if (i == 'series') {
+						dataSe = result[i];
+					}
+
+				}
+				for (var i in dataSe) {
+					dataNum.push(dataSe[i].data)
+				}
+			}
+			xhr.open('get', 'data.json', true);
+			xhr.send(null);
+		}
+		getData();
+	</script>
+</body>
+</html>

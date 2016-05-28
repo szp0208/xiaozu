@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>石志鹏-Object</title>
+	<link rel="stylesheet" href="../css/reset.css">
+</head>
+	<style type="text/css">
+		.wrap {
+			width: 700px;
+			height: 700px;
+			margin: 0 auto;
+			padding: 0 50px;
+		}
+		#cv {
+			background: #fff;
+		}
+		a {
+			float: right;
+			width: 100px;
+			height: 35px;
+			border: 1px solid #ccc;
+			text-align: center;
+			line-height: 35px;
+			cursor: pointer;
+		}
+	</style>
+<body>
+	<div class="wrap">
+		<canvas id="cv" width="700" height="700"></canvas>
+	</div>
+	<a href="ring.html" alt="" title="">环状数据表</a>
+	<a href="Histogram.html" alt="" title="">柱状图数据表</a>
+	<a href="sector_charts.html" alt="" title="">扇形数据表</a>
+
+	<script src="../js/jquery-1.12.3.js"></script>
+	<script type="text/javascript">
+		function getData() {
+			var dataTit = [];
+			var dataLe = [];
+			var dataYa = [];
+			var dataNum = [];
+			var dataSe = [];
+			var xhr = new XMLHttpRequest();
+			xhr.onload = function() {
+				var result = JSON.parse(xhr.responseText);
+
+				for (var i in result) {
+					if (i == 'title') {
+						dataTit = result[i].text;
+					} else if (i == 'legend') {
+						dataLe = result[i].data;
+					} else if (i == 'yAxis') {
+						dataYa = result[i].data;
+					} else if (i == 'series') {
+						dataSe = result[i];
+					}
+
+				}
+				for (var i in dataSe) {
+					dataNum.push(dataSe[i].data)
+				}
+				new Line(result);
+			}
+			xhr.open('get', 'data.json', true);
+			xhr.send(null);
+		}
+		getData();
+
+		function Line(data) {
+			this.result = data;
+			this.dataTit = [];
+			this.dataLe = [];
+			this.dataYa = [];
+			this.dataNum = [];
+			this.dataSe = [];
+			for (var i in this.result) {
+				if (i == 'title') {
+					this.dataTit = this.result[i].text;
+				} else if (i == 'legend') {
+					this.dataLe = this.result[i].data;
+				} else if (i == 'yAxis') {
+					this.dataYa = this.result[i].data;
+				} else if (i == 'series') {
+					this.dataSe = this.result[i];
+				}
+
+			}
+			for (var i in this.dataSe) {
+				this.dataNum.push(this.dataSe[i].data)
+			}
+
+			this.numTotal = 0;
+			this.numTotalT = 0;
+			for (var i = 0; i < this.dataNum[0].length; i++) {
+				this.numTotal += this.dataNum[0][i];
+				this.numTotalT += this.dataNum[1][i]; 
+			};
+
+			this.oC = document.getElementById('cv');
+			this.box = document.getElementById('box');
+			this.oGC = this.oC.getContext('2d');
+
+			this.oGC.translate(0.5, 0.5);
+			this.oGC.lineWidth = 1;
+			this.oGC.beginPath();
+			this.oGC.moveTo(100, 0);
+			this.oGC.lineTo(100, 610);
+			this.oGC.closePath();
+			this.oGC.stroke();
+
+			this.oGC.beginPath();
+			this.oGC.moveTo(90, 600);
+			this.oGC.lineTo(700, 600);
+			this.oGC.closePath();
+			this.oGC.stroke();
+
+			for (var i = 1; i < this.dataYa.length; i++) {
+				this.oGC.strokeStyle = '#ccc';
+				this.oGC.beginPath();
+				this.oGC.moveTo(90, 100 * i);
+				this.oGC.lineTo(700, 100 * i);
+				this.oGC.closePath();
+				this.oGC.stroke();
+			};
+			for (var i = 1; i < this.dataNum[0].length + 1; i++) {
+				this.oGC.strokeStyle = '#ccc';
+				this.oGC.beginPath();
+				this.oGC.moveTo(100 + 100 * i, 0);
+				this.oGC.lineTo(100 + 100 * i, 610);
+				this.oGC.closePath();
+				this.oGC.stroke();
+			};
+			for (var i = 0; i < this.dataNum[0].length; i++) {
+				this.oGC.font = '18px impact';
+				this.oGC.fillText(this.dataNum[0][i], 10, 610 - (i * 100))
+			};
+			for (var i = 0; i < this.dataNum[0].length; i++) {
+				this.oGC.font = '18px SimSun';
+				this.oGC.fillText(this.dataYa[i], 70 + i * 100, 630)
+			};
+
+			this.oGC.strokeStyle = '#c23531';
+			this.oGC.beginPath();
+			this.oGC.moveTo(100, 600);
+			this.oGC.lineTo(200, 600 - this.dataNum[0][0] / this.numTotal * 600);
+			this.oGC.closePath();
+			this.oGC.stroke();
+			this.oGC.strokeStyle = '#2f4554';
+			this.oGC.beginPath();
+			this.oGC.moveTo(100, 600);
+			this.oGC.lineTo(200, 600 - this.dataNum[1][0] / this.numTotal * 600);
+			this.oGC.closePath();
+			this.oGC.stroke();
+			for (var i = 0; i < this.dataYa.length; i++) {
+				this.oGC.strokeStyle = '#c23531';
+				this.oGC.beginPath();
+				this.oGC.moveTo(200 + i * 100, 600 - this.dataNum[0][i] / this.numTotal * 600);
+				this.oGC.lineTo(200 + (i + 1) * 100, 600 - this.dataNum[0][i + 1] / this.numTotal * 600);
+				this.oGC.closePath();
+				this.oGC.stroke();
+			};
+			for (var i = 0; i < this.dataYa.length; i++) {
+				this.oGC.strokeStyle = '#2f4554';
+				this.oGC.beginPath();
+				this.oGC.moveTo(200 + i * 100, 600 - this.dataNum[1][i] / this.numTotal * 600);
+				this.oGC.lineTo(200 + (i + 1) * 100, 600 - this.dataNum[1][i + 1] / this.numTotal * 600);
+				this.oGC.closePath();
+				this.oGC.stroke();
+			};
+			this.oGC.font = '18px impact';
+			this.oGC.fillText(this.dataTit, 10, 680);
+			this.oGC.fillStyle = '#c23531';
+			this.oGC.fillRect(200, 660, 20, 20);
+			this.oGC.fillStyle = '#2f4554';
+			this.oGC.fillRect(300, 660, 20, 20);
+			this.oGC.font = '18px impact';
+			this.oGC.fillText(this.dataLe[0], 230, 680);
+			this.oGC.font = '18px impact';
+			this.oGC.fillText(this.dataLe[1], 330, 680);
+		}
+	</script>
+</body>
+</html>
