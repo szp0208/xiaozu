@@ -1,0 +1,165 @@
+@charset "utf-8";
+body {
+	height: 900px;
+	background: #ffd0b6;
+}
+.wrap-fir {
+	position: relative;
+	width: 600px;
+	height: 700px;
+	margin: 20px auto 0;
+	padding: 10px;
+	border-radius: 10px;
+	background: #fcdedb;
+}
+.material-fir {
+	float: left;
+	width: 100px;
+	height: 600px;
+}
+.material-fir dl {
+	width: 100%;
+	height: 100px;
+}
+.material-fir dt {
+	width: 80px;
+	height: 80px;
+}
+.material-fir img {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+.material-fir dd {
+	width: 100%;
+	height: 14px;
+	font-size: 18px;
+	font-family: 'simHei';
+}
+.material-fir dd em {
+	color: red;
+}
+.material-fir dd strong, .material-fir dd em {
+	float: left;
+}
+.play {
+	float: left;
+	width: 500px;
+	height: 500px;
+	cursor: url("../images/hand_icon.png"), default;
+}
+.play div {
+	position: relative;
+	overflow: hidden;
+	float: left;
+	width: 100px;
+	height: 200px;
+	background: url("../images/hole.png") center bottom no-repeat;
+	background-size: contain;
+	font-size: 14px;
+	cursor: url("../images/hand_icon.png"), default;
+}
+.play span {
+	position: absolute;
+	bottom: 200px;
+	left: 10px;
+	width: 80px;
+	height: 80px;
+}
+.sta {
+	float: left;
+	width: 100%;
+	height: 30px;
+	margin-top: 10px;
+	font-size: 18px;
+}
+.sta span {
+	float: right;
+	margin: 0 10px;
+	cursor: pointer;
+	padding: 5px;
+	border: 1px solid #ccc;
+	border-radius: 3px;
+	background: #fff;
+}
+.sta span:hover {
+	border: 1px solid orange;
+}
+.sta strong, .sta em {
+	float: left;
+}
+.state {
+	position: fixed;
+	display: none;
+	width: 30px;
+	height: 30px;
+	background: transparent;
+}
+.explain {
+	padding: 5px;
+	color: #ef8936;
+	text-align: center;
+	font-size: 18px;
+}
+.pic-other {
+	position: absolute;
+	right: -100px;
+	height: 360px;
+	width: 100px;
+}
+.pic-other div {
+	width: 100px;
+	height: 100px;
+}
+.pic-other p {
+	height: 20px;
+	color: #620FB6;
+	font-size: 18px;
+}
+.msk {
+	position: absolute;
+	width: 100%;
+	height: 800px;
+	background: #fff;
+	z-index: 9999;
+}
+.msk p {
+	width: 100%;
+	color: pink;
+	text-align: center;
+	font-size: 24px;
+}
+.msk button {
+	display: block;
+	width: 200px;
+	height: 50px;
+	margin: 20px auto;
+	color: #fff;
+	line-height: 50px;
+	font-size: 24px;
+	background: orange;
+}
+.mskmin {
+	position: absolute;
+	display: none;
+	width: 100%;
+	height: 800px;
+	background: #fff;
+	z-index: 9999;
+}
+.mskmin p {
+	width: 100%;
+	color: pink;
+	text-align: center;
+	font-size: 24px;
+}
+.mskmin button {
+	display: block;
+	width: 200px;
+	height: 50px;
+	margin: 20px auto;
+	color: #fff;
+	line-height: 50px;
+	font-size: 24px;
+	background: orange;
+}

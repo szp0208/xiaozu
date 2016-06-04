@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>石志鹏-Object</title>
+	<link rel="stylesheet" href="../css/reset.css">
+	<link rel="stylesheet" href="../css/index.css">
+</head>
+	<style type="text/css">
+	html, body {
+		height: 100%;
+		background: #ffd0b6;
+	}
+	/* 整个游戏区块 */
+	.wrap {
+		display: none;
+		width: 800px;
+		height: 524px;
+		/*border:1px solid red;*/
+	}
+	/* 材料区 */
+	.material-box {
+		/*display: none;*/
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 500px;
+		height: 524px;
+		/*border: 1px solid #85f;*/
+		background: url(../images/kitchen_table.png) center center no-repeat;
+		background-size: 100% 100%;
+		border-radius: 10px;
+		z-index: 100;
+	}
+	.voice {
+		position: absolute;
+		top: 10px;
+		right: 50px;
+		width: 40px;
+		height: 40px;
+		background: url(../images/voice_open.png) no-repeat;
+	}
+	/* 工厂区 */
+	.factory-box {
+		/*display: none;*/
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 300px;
+		height: 524px;
+		/*border: 1px solid #58f;*/
+		background: #fff url(../images/kitchen.png) center no-repeat;
+		background-size: auto 60%;
+		border-radius: 10px;
+	}
+	/* 材料 */
+	.material {
+		position: absolute;
+		width: 75px;
+		height: 75px;
+		font-size: 14px;
+		font-weight: bold;
+		text-align: center;
+		/*line-height: 100px;*/
+		cursor: pointer;
+		-webkit-border-radius: 50%;
+		-moz-border-radius: 50%;
+		border-radius: 5px;
+		cursor: url('../images/hand_icon.png'),default;
+	}
+	.title {
+		height: 50px;
+		font-size: 16px;
+		color: #58f;
+	}
+	.title p {
+		padding-left: 94px;
+		height: 25px;
+		line-height: 25px;
+	}
+	.shock {
+		animation: shock 2s;
+	}
+	@keyframes shock {
+		0% {-webkit-transform: translate(0);}
+		25% {-webkit-transform: translate(-2px);}
+		50% {-webkit-transform: translate(2px);}
+		75% {-webkit-transform: translate(-2px);}
+		100% {-webkit-transform: translate(0);}
+	}
+
+	/* 弹窗 */
+	.success, .fail {
+		/*display: none;*/
+		position: absolute;
+		top: 0;
+		left: 32%;
+		width: 300px;
+		height: 190px;
+		margin: 50px auto;
+		padding-top: 10px;
+		box-shadow: 0 0 5px #ccc;
+		z-index: 999;
+	}
+	.fail {
+		display: none;
+		background: url('../images/fail.png') no-repeat;
+		background-position-x :50px; 
+	}
+	.success {
+		display: none;
+		background: url('../images/success.png') no-repeat;
+		background-size: 70% 100%;
+		background-position-x :50px; 
+	}
+	.fail span, .success span {
+		display: block;
+		width: 150px;
+		height: 30px;
+		margin:  30px auto;
+		background: #fff;
+		text-align: center;
+		line-height: 30px;
+		border-radius: 5px;
+		cursor: pointer;
+		font-size: 12px;
+		background: rgba(255,255,255,0.8);
+		box-shadow: 0 0 5px #ccc;
+	}
+	.success span {
+		margin-top: 45px;
+	}
+	.cake {
+		display: none;
+		width: 500px;
+		height: 500px;
+		margin: 0 auto;
+	}
+	.cake img {
+		width: 100%;
+	}
+	.mask {
+		position: absolute;
+		display: none;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0,0,0,0.5);
+	}
+	.text {
+		text-align: center;
+		color: #fff;
+		font-size: 50px;
+		text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de;
+	}
+	.factory-box .title .intro {
+		padding: 0;
+		text-align: center;
+		height: auto;
+	}
+	</style>
+<body>
+	<div class="msk">
+		<p>请选择要制作的礼物并开始游戏！<br>游戏愉快！</p>
+		<button>蛋糕</button><button>玩具</button>
+	</div>
+	<div class="wrap-fir">
+		<div class="mskmin">
+			<p>游戏时间到啦！！！</p>
+			<button>继续获取材料</button><button>进入下一步制作！</button>
+		</div>
+		<p class="explain">点击下落的图片收集制作礼物的原材料！</p>
+		<div class="material-fir">
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>面包：</strong><em>0</em></dd>
+			</dl>
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>奶油：</strong><em>0</em></dd>
+			</dl>
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>蜡烛：</strong><em>0</em></dd>
+			</dl>
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>巧克力：</strong><em>0</em></dd>
+			</dl>
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>樱桃：</strong><em>0</em></dd>
+			</dl>
+			<dl>
+				<dt><img src="" title="" alt=""></dt>
+				<dd><strong>牛奶：</strong><em>0</em></dd>
+			</dl>
+		</div>
+		<div class="play">
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+			<div><span></span></div>
+		</div>
+		<div class="sta"><strong>倒计时：</strong><em>30</em><span>暂停/继续</span><span>开始</span></div>
+		<div class="state"></div>
+		<div class="pic-other">
+			<div></div>
+			<p>所有材料 -1</p>
+			<div></div>
+			<p>所有材料 +1</p>
+			<div></div>
+			<p>打酱油滴！</p>
+		</div>
+	</div>
+	<audio src="../music/fly.mp3" autoplay loop="loop"></audio>
+	<div class="wrap" id="box">
+		<div class="material-box">
+			<span class="voice"></span>
+		</div>
+		<div class="factory-box">
+			<div class="title">
+				<p class="material-num">
+					<strong>材料种类:</strong>
+					<span>0/6</span>
+				</p>
+				<p class="push-num">
+					<strong>放入次数:</strong>
+					<span>0</span>
+				</p>
+				<p class="intro">
+					请把材料拖拽到右边，拖拽的顺序会导致蛋糕制作失败哦
+				</p>
+		</div>
+		</div>
+		<div class="success">
+			<span>制作成功，点击获取蛋糕</span>
+			<span class="reMake">重新制作</span>
+		</div>
+		<div class="fail">
+			<span class="reStart">制作失败，重新开始</span>
+			<span>返回重新获取材料</span>
+			<span class="end">结束</span>
+		</div>
+		<div class="cake">
+			<div class="text">6.1儿童节快乐</div>
+			<img src="../images/cake1.png" alt="">
+		</div>
+	</div>
+	<div class="mask"></div>
+	<script src="../js/jquery-1.12.3.js"></script>
+	<script src="../js/children.js"></script>
+	<script type="text/javascript">
+	function wrapTwo() {
+		/* 实现块始终水平垂直居中功能 */
+		$(window).resize(function(){
+			var left;
+			var top;
+			if ($(window).width() >= 800) {
+				left = ($(window).width() - $(".wrap").outerWidth())/2 + "px"
+			} else {
+				left = "0px";
+			}
+			if ($(window).height() >= 524) {
+				top = ($(window).height() - $(".wrap").outerHeight())/2 + "px";
+			} else {
+				top = "0px";
+			}
+		    $(".wrap").css({ 
+		        "position" : "absolute", 
+		        "left" : left, 
+		        "top" : top
+		    });        
+		}); 
+
+		$(function() {
+			var materialCount = 0;
+			var minMaterialNum = 0;
+			// 页面位置调整
+			$(window).resize();
+
+			// var materialJson = [];
+			// for (var i = 0; i < data.length; i++) {
+			// 	var tempJson = {};
+			// 	tempJson.name
+			// }
+			// 材料数据模拟
+			var materialJson = [
+				{
+					"name" : "bread",
+					"number" : data[0][1],
+					"order" : 1,
+					"goodsStyle" : "url(../images/bread.png) center bottom no-repeat"
+				},
+				{
+					"name" : "cream",
+					"number" : data[1][1],
+					"order" : 2,
+					"goodsStyle" : "url(../images/cream.png) center bottom  no-repeat"
+				},
+				{
+					"name" : "candle",
+					"number" : data[2][1],
+					"order" : 6,
+					"goodsStyle" : "url(../images/candle.png) center bottom  no-repeat"
+				},
+				{
+					"name" : "chocolate",
+					"number" : data[3][1],
+					"order" : 4,
+					"goodsStyle" : "url(../images/chocolate.png) center bottom  no-repeat"
+				},
+				{
+					"name" : "cherry",
+					"number" : data[4][1],
+					"order" : 5,
+					"goodsStyle" : "url(../images/cherry.png) center bottom  no-repeat"
+				},
+				{
+					"name" : "milk",
+					"number" : data[5][1],
+					"order" : 3,
+					"goodsStyle" : "url(../images/milk.png) center bottom  no-repeat"
+				}
+			]
+			console.log(materialJson);
+
+			// 蛋糕对象
+			function Cake(materialArr, materialBox) {
+				this.materialArr = materialArr;
+				this.materialBox = materialBox;
+				this.materialShow();
+			}
+			Cake.prototype.materialShow = function() {
+				for (var i = 0; i < this.materialArr.length; i++) {
+					for (var j = 0; j < this.materialArr[i]["number"]; j++) {
+						$("<div class='" + this.materialArr[i]["name"] + " material'><div/>").appendTo(this.materialBox).css({
+							"top" : 350 + Math.floor(i / 4) * 80 + "px",
+							"left" : 50 + (i % 4)  * 106 + "px",
+							"background" : this.materialArr[i]["goodsStyle"],
+							"background-size" : "100% 80%"
+						}).attr({
+							"name" : this.materialArr[i]["name"],
+							"order" : this.materialArr[i]["order"]
+						}).html(this.materialArr[i]["name"]);
+					}
+				}
+			}
+
+			new Cake(materialJson, ".material-box");
+	
+			// 拖拽对象
+			function Darg(gameBox, box, con, factory) {
+				var _this = this;
+				this.gameBox = gameBox;
+				this.con = con;
+				this.box = box;
+				this.factory = factory;
+				this.oldX = 0;	//获取鼠标点下的鼠标横坐标
+				this.oldY = 0;
+				this.newX = 0;
+				this.newY = 0;
+				this.nowDisX = 0;
+				this.nowDisY = 0;
+				this.nowX = 0;
+				this.maxX = 0;
+				this.boxMaxX = this.box.clientWidth - this.con.offsetHeight;
+				this.sum = 4;
+				this.con.onmousedown = function(e) {
+					_this.darDown(e);
+				};
+
+			}
+			// 共享数据
+			Darg.prototype.count = 0;
+			Darg.prototype.materialOrderArr = [];
+			Darg.prototype.darDown = function(e) {
+				var _this = this;
+				e.preventDefault();
+				e.stopPropagation();
+				this.oldX = e.clientX;
+				this.oldY = e.clientY;
+				this.nowDisX = this.con.offsetLeft;
+				this.nowDisY = this.con.offsetTop;
+				document.onmousemove = function(e) {
+					_this.dargMove(e);
+				};
+				this.con.onmouseup = function() {
+					_this.dargUp();
+				}
+			};
+			Darg.prototype.dargMove = function(e) {
+				e.preventDefault();
+				this.newX = e.clientX;
+				this.newY = e.clientY;
+				this.nowX = this.nowDisX + this.newX - this.oldX;
+				this.nowY = this.nowDisY + this.newY - this.oldY;
+				this.maxX = this.gameBox.clientWidth - this.con.offsetHeight;
+				this.maxY = this.box.clientHeight - this.con.offsetHeight;
+				if (this.nowX <= 0) {
+					this.nowX = 0;
+				}
+				if (this.nowX >= this.maxX) {
+					this.nowX = this.maxX;
+				};
+
+				if (this.nowY <= 0) {
+					this.nowY = 0;
+				};
+				if (this.nowY >= this.maxY) {
+					this.nowY = this.maxY;
+				};
+
+				this.con.style.left = this.nowX + 'px';
+				this.con.style.top = this.nowY + 'px';
+			};
+			Darg.prototype.dargUp = function() {
+				document.onmousemove = null;
+				if (this.nowX >= this.boxMaxX) {
+					this.con.style.display = "none";
+					Darg.prototype.materialOrderArr.push($(this.con).attr("order"));
+					Darg.prototype.count++;
+					
+					// 数组去重
+					for ( var i=0; i<Darg.prototype.materialOrderArr.length; i++ ) {
+						for ( var j=i+1; j<Darg.prototype.materialOrderArr.length; j++ ) {
+							if ( Darg.prototype.materialOrderArr[i] == Darg.prototype.materialOrderArr[j] ) {
+								Darg.prototype.materialOrderArr.splice( j, 1 );
+								j--;
+							}
+						}
+					}
+					// 操作样式
+					$(".material-num span").html(Darg.prototype.materialOrderArr.length + "/6");
+					$(".push-num span").html(Darg.prototype.count);
+
+					if (Darg.prototype.count != 6) {
+						$(this.factory).animate({
+							"right" : 10 + "px"
+						}, 200).animate({
+							"right" : -10 + "px"
+						}, 200).animate({
+							"right" : "0px"
+						}, 200);
+					}
+					if (Darg.prototype.count == 6) {
+						// 对拖拽对象的共享数据进行清零
+						for (var i = 1; i <= Darg.prototype.materialOrderArr.length; i++) {
+							if (i != Darg.prototype.materialOrderArr[i - 1]) {
+								// 放入材料的顺序错误
+								Darg.prototype.count = 0;
+								Darg.prototype.materialOrderArr = [];
+								$(".material-box").css("display", "none");
+								$(".factory-box").css("display", "none");
+								$("body").css("background", "#fff");
+								$(".fail").css("display", "block");
+								$(".mask").css("display", "block");
+								// 重置页面数据
+								$(".material-num span").html("0/6");
+								$(".push-num span").html("0/6");
+								return;
+							}
+						}
+						// 重置页面数据
+						$(".material-num span").html("0/6");
+						$(".push-num").html("0/6");
+						// 制作成功
+						$(".material-box").css("display", "none");
+						$(".factory-box").css("display", "none");
+						$("body").css("background", "#fff");
+						$(".success").css("display", "block");
+						$(".mask").css("display", "block");
+						Darg.prototype.count = 0;
+						Darg.prototype.materialOrderArr = [];
+					}
+					return;
+				}
+			}
+			var box = $(".material-box")[0];
+			var gameBox = $(".wrap")[0];
+			var factory = $(".factory-box")[0];
+			var cons = box.getElementsByTagName("div");
+			for (var i = 0; i < cons.length; i++) {
+				new Darg(gameBox, box, cons[i], factory);
+			};
+			
+		});
+
+		$('.success span').eq(0).click(function() {
+			$('.cake').fadeIn();
+			$(".success").fadeOut();
+			$("body").css("background", "#fff");
+			$(".mask").css("display", "none");
+		})
+		$(".reStart").on("click", function() {
+			$(".material-box").css("display", "block");
+			$(".factory-box").css("display", "block");
+			$("body").css("background", "#ffd0b6");
+			$(".fail").css("display", "none");
+			$(".mask").css("display", "none");
+
+		});
+		$(".reMake").on("click", function() {
+			$(".material-box").css("display", "block");
+			$(".factory-box").css("display", "block");
+			$("body").css("background", "#ffd0b6");
+			$(".success").css("display", "none");
+			$(".mask").css("display", "none");
+
+		});
+		$('.fail span:eq(1)').on('click', function() {
+			$('.wrap').fadeOut();
+			$('.wrap-fir').fadeIn();
+			$('.mskmin').fadeOut();
+			$('.mask').fadeOut();
+			$('.sta em').html('30');
+			start = 0;
+		})
+		var voiceFlag = true;
+		$(".voice").on("click", function() {
+			if (voiceFlag) {
+				$(this).css("background-image", "url(../images/voice_close.png)");
+				voiceFlag = false;
+				$("audio")[0].pause();
+				console.log($("audio")[0]);
+			} else {
+				$(this).css("background-image", "url(../images/voice_open.png)");
+				voiceFlag = true;
+				$("audio")[0].play();
+			}
+		});
+	}
+	</script>
+</body>
+</html>
